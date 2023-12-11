@@ -21,7 +21,7 @@ class ProfileController extends AbstractController
         $this->em=$em;
     }
    
-    #[Route('/profile', name: 'profile')]
+    #[Route('/', name: 'profile')]
     public function create(Request $request): Response
     {
         $profile = new Profile();
