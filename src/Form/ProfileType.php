@@ -3,14 +3,17 @@
 namespace App\Form;
 
 use App\Entity\Profile;
+use App\Entity\Image;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\CollectionType;
 use Symfony\Component\Form\Extension\Core\Type\FileType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Validator\Constraints\All;
 use Symfony\Component\Validator\Constraints\Image as ConstraintsImage;
+use Vich\UploaderBundle\Form\Type\VichImageType;
 
 class ProfileType extends AbstractType
 {
@@ -27,16 +30,14 @@ class ProfileType extends AbstractType
                 'class'=>'App\Entity\Figures',
                 'choice_label'=>'figure',
             ])
-            ->add('images', FileType::class,[
-                'multiple'=> true,
-                'mapped'=> false,
-                'constraints'=>
-                new All(['constraints'=>[
-                    new ConstraintsImage()
-                ]])
-
-
+            ->add('images', CollectionType::class, [
+                'entry_type'=> ProfileImageType::class,
+                'prototype'=> true,
+                'allow_add'=> true
             ])
+
+
+            
         ;
     }
 

@@ -3,13 +3,15 @@
 namespace App\Entity;
 
 use App\Repository\ProfileRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
 
 
 #[ORM\Entity(repositoryClass: ProfileRepository::class)]
-class Profile implements \Serializable
+class Profile 
 
 {
     #[ORM\Id]
@@ -31,8 +33,14 @@ class Profile implements \Serializable
     #[ORM\JoinColumn(nullable: false)]
     private ?Figures $figure = null;
 
-    #[ORM\Column(type: Types::ARRAY)]
-    private ?array $images = [];
+    #[ORM\OneToMany(mappedBy: 'profile', targetEntity: Image::class)]
+    private Collection $images;
+
+    public function __construct()
+    {
+        $this->images = new ArrayCollection();
+    }
+
 
     public function getId(): ?int
     {
@@ -88,37 +96,34 @@ class Profile implements \Serializable
         return $this;
     }
 
-    public function getImages(): ?array
+    /**
+     * @return Collection<int, Image>
+     */
+    public function getImages(): Collection
     {
         return $this->images;
     }
 
-    public function setImages(array $images): static
+    public function addImage(Image $image): static
     {
-        
-        $this->images[] = $images;
+        if (!$this->images->contains($image)) {
+            $this->images->add($image);
+            $image->setProfile($this);
+        }
 
         return $this;
     }
 
-    public function serialize()
+    public function removeImage(Image $image): static
     {
-        return serialize(array(
-            $this->id,
-            $this->email,
-            $this->color,
-            $this->figure,
-            $this->images,
-        ));
+        if ($this->images->removeElement($image)) {
+            // set the owning side to null (unless already changed)
+            if ($image->getProfile() === $this) {
+                $image->setProfile(null);
+            }
+        }
+
+        return $this;
     }
-    public function unserialize($serialized)
-    {
-        list(
-            $this->id,
-            $this->email,
-            $this->color,
-            $this->figure,
-            $this->images,
-        ) = unserialize($serialized);
-    }
+
 }
