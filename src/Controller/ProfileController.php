@@ -23,7 +23,7 @@ class ProfileController extends AbstractController
     public function __construct(ProfileRepository $profileRepository, ImageRepository $imageRepository, EntityManagerInterface $em)
     {
         $this->profileRepository = $profileRepository;
-        $this->imageRepository = $imageRepository;
+        $this->imageRepository=$imageRepository;
         $this->em=$em;
     }
    
@@ -36,65 +36,62 @@ class ProfileController extends AbstractController
 
         $addProfileImageForm = $this->createForm(ProfileImageType::class );
         $addProfileImageForm->handleRequest($request);
-       
+
         if($createProfileForm->isSubmitted() && $createProfileForm-> isValid()){
             $newProfile = $createProfileForm->getData();
-            
-            $this->em->persist($newProfile);
-            $this->em->flush();
-        }
 
-        if($addProfileImageForm->isSubmitted()&& $addProfileImageForm -> isValid()){
-            $imagesPackAll= $addProfileImageForm->get('fileName')->getData();
-            if($imagesPackAll){
-                foreach($imagesPackAll as $imageC){
-                    $newFileName= uniqid(). '.' . $imageC->guessExtension();
+            $images=$addProfileImageForm->get('imageName')->getData();
+            if($images){
+                foreach($images as $imageC){
+                    $newFileName = uniqid() . '.' . $imageC -> guessExtension();
                     try{
                         $imageC->move(
-                            $this ->getParameter('kernel.project_dir') . '/public/images/profile',
+                            $this->getParameter('images_repository'),
                             $newFileName
                         );
-                        $newCPhoto = new Image();
-                       
-                        $newCPhoto ->setImageName($newFileName);
-                        $newCPhoto-> setProfile($newProfile);
+                        $newCPhoto=new Image();
+                        $newCPhoto->setImageName($newFileName);
+                        $newCPhoto->setProfile($newProfile);
+                        
                         $this->em->persist($newCPhoto);
                         $this->em->flush();
-                    } catch(FileException $e){
+                    }catch(FileException $e){
+
+                    }
+                }
+            }
+            
+        }
+        
+        if($addProfileImageForm->isSubmitted()&& $addProfileImageForm -> isValid()){
+
+            $images=$addProfileImageForm->get('imageName')->getData();
+            if($images){
+                foreach($images as $imageC){
+                    $newFileName = uniqid() . '.' . $imageC -> guessExtension();
+                    try{
+                        $imageC->move(
+                            $this->getParameter('images_repository'),
+                            $newFileName
+                        );
+                        $newCPhoto=new Image();
+                        $newCPhoto->setImageName($newFileName);
+                        $newCPhoto->setProfile($newProfile);
+                        
+                        $this->em->persist($newCPhoto);
+                        $this->em->flush();
+                    }catch(FileException $e){
 
                     }
                 }
             }
         }
 
-        
-
-            /*
-            if($images=$form['images']->getData()){
-                $fileNameArray=[];
-                foreach($images as $image){
-                    $newFileName = uniqid() . '.' . $image -> guessExtension();
-    
-                    $image-> move(
-                        $this ->getParameter('kernel.project_dir') . '/public/images',
-                        $newFileName
-                    );
-                    array_push($fileNameArray, $newFileName);
-                    
-                }
-                $newProfile ->setImages($fileNameArray);
-            }
-            */
-            
-            
-            
-            
-
-        
-
         return $this->render('profile/index.html.twig', [
             'form' => $createProfileForm,
             'image_form'=>$addProfileImageForm
         ]);
+ 
     }
+    
 }

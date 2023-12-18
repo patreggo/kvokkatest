@@ -4,20 +4,14 @@ namespace App\Entity;
 
 use App\Repository\ImageRepository;
 use Doctrine\ORM\Mapping as ORM;
-use Symfony\Component\HttpFoundation\File\File;
-use Vich\UploaderBundle\Mapping\Annotation as Vich;
 
 #[ORM\Entity(repositoryClass: ImageRepository::class)]
-#[Vich\Uploadable]
 class Image
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
     private ?int $id = null;
-
-    #[Vich\UploadableField(mapping: 'profile_images', fileNameProperty: 'imageName', )]
-    private ?File $imageFile = null;
 
     #[ORM\Column(length: 255)]
     private ?string $imageName = null;
@@ -29,18 +23,6 @@ class Image
     public function getId(): ?int
     {
         return $this->id;
-    }
-
-    public function getImageFile(): ?string
-    {
-        return $this->imageFile;
-    }
-
-    public function setImageFile(string $imageFile): static
-    {
-        $this->imageFile = $imageFile;
-
-        return $this;
     }
 
     public function getImageName(): ?string

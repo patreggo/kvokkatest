@@ -15,11 +15,8 @@ class ProfileImageType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
-            ->add('imageFile', VichImageType::class,[
-                'required' => true,
-                'download_uri' => true,
-                'image_uri' => true,
-            ])
+            ->add('imageName')
+            
             
         ;
     }

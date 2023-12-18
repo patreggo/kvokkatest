@@ -30,10 +30,11 @@ class ProfileType extends AbstractType
                 'class'=>'App\Entity\Figures',
                 'choice_label'=>'figure',
             ])
-            ->add('images', CollectionType::class, [
-                'entry_type'=> ProfileImageType::class,
-                'prototype'=> true,
-                'allow_add'=> true
+            ->add('images', FileType::class, [
+                'label' => false,
+                'multiple' => true,
+                'mapped' => false,
+                'required' => false
             ])
 
 
