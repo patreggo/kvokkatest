@@ -52,6 +52,8 @@ class ProfileController extends AbstractController
                         $newCPhoto->setImageName($newFileName);
                         $newCPhoto->setProfile($newProfile);
                         
+                        $this->em->persist($newProfile);
+                        $this->em->flush();
                         $this->em->persist($newCPhoto);
                         $this->em->flush();
                     }catch(FileException $e){
@@ -59,8 +61,7 @@ class ProfileController extends AbstractController
                     }
                 }
             }
-            $this->em->persist($newProfile);
-            $this->em->flush();
+            
             
         }
 
